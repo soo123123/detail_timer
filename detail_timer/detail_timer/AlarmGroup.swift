@@ -14,6 +14,6 @@ struct AlarmGroup: Identifiable, Codable {
     var repeatDays: Set<Weekday> // 반복 요일, Set을 쓴 이유 == 중복방지, 포함 여부 체크가 빠름.
     
     var enabled: Bool // 그룹 전체 활성화 여부
-    var skipDates: Set<Date> // 특정 날짜에는 알람을 울리지 않도록 예외 처리
+    var skipDates: Set<Date/*Date == 절대 시간, 같은 날이여도 시간이 다르면 다른 값.*/> // 특정 날짜에는 알람을 울리지 않도록 예외 처리
     var times: [AlarmTime] // 그 그룹에 포합된 여러 알람 시각.
 }
