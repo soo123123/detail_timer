@@ -43,6 +43,19 @@
 
 **저장 프로퍼티(Stored Property)** : 클래스와 구조체에서만 사용할 수 있고, 값을 저장하기 위해 선언되는 상수/변수
 
+**mutating 사용 이유**
+- struct는 값 타입(value type)이라서 내부 프로퍼티를 변경하려면 필요함.
+
+**$0** : 익명 함수 단축 문법
+
+**guard문**
+- 조건문
+- 조건이 false일 때 else를 실행함.
+
+**contains**
+- 컬렉션에 특정 값이 포함되어 있는지 확인하는 메서드
+- return == bool
+
 ---
 **제작에 도움이 된 페이지**  
 - [40시간만에 Swift로 IOS 앱 만들기](https://devxoul.gitbooks.io/ios-with-swift-in-40-hours/content/)
