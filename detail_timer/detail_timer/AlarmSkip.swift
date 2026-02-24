@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension AlarmGroup { //상속
+extension AlarmGroup { //기능 확장
     
     //오늘 하루 이 그룹 알람 전부 스킵
     mutating func skipToday(calendar: Calendar = .current) { // .current == 사용자의 현재 설정을 따르는 달력 객체
@@ -36,7 +36,7 @@ extension AlarmGroup { //상속
         skipDates = skipDates.filter {$0 >= today} // 과거 날짜 정리
     }
     
-    func shoudRing(at  date: Date, calendar: Calendar = .current) -> Bool {
+    func shouldRing(at  date: Date = Date(), calendar: Calendar = .current) -> Bool {
         //guard문 : 조건이 false면 else 실행.
         
         // 조건1: enabled가 true여야 함.
@@ -48,14 +48,15 @@ extension AlarmGroup { //상속
         // component의 return값은 int형
         let weekdayNumber = calendar.component(.weekday, from: date) // 오늘이 무슨 요일인지 숫자로 반환
         
-        //조건3: 열거형에 값을 저장하고 변수에 해당 값 복사가 true여야 함.(예외처리 느낌)
+        // 조건3: 열거형에 값을 저장하고 변수에 해당 값 복사가 true여야 함.(예외처리 느낌)
         guard let weekday = Weekday(rawValue: weekdayNumber) else {
             return false
         }
         
-        //조건4: repeatDays에 weekday값이 있어야 함. contains의 return이 bool임.
+        // 조건4: repeatDays에 weekday값이 있어야 함. contains의 return이 bool임.
         guard repeatDays.contains(weekday) else {return false}
         
-        return true
+        // times 안에 있는 요소들 중에서 time이 주어진 date와 같은 시와 분을 가지는 것이 하나라도 있으면 true를 반환
+        return times.contains {$0.time.matches(date, calendar: calendar)}
     }
 }
