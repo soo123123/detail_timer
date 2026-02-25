@@ -36,6 +36,7 @@ extension AlarmGroup { //기능 확장
         skipDates = skipDates.filter {$0 >= today} // 과거 날짜 정리
     }
     
+    // 해당 날짜가 매번 스킵인지 검사
     func shouldRing(at  date: Date = Date(), calendar: Calendar = .current) -> Bool {
         //guard문 : 조건이 false면 else 실행.
         
