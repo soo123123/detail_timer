@@ -18,37 +18,46 @@ struct ContentView: View {
             if let group = groups.first{
                 Text(group.name)
                 Text(group.isSkipped(on: Date()) ? "오늘: 스킵됨" : "오늘: 정상")
-
+                
                 Button("오늘만 끄기") {
                     groups[0].skipToday()
                     AlarmStore.shared.save(groups)
                 }
-
+                
                 Button("오늘 스킵 해제") {
                     groups[0].unskipToday()
                     AlarmStore.shared.save(groups)
                 }
-            
+                
             }
             else {
-            Button("테스트 그룹 생성") {
-                let g = AlarmGroup(
-                    id: UUID(),
-                    name: "평일 8시",
-                    repeatDays: [.monday, .tuesday, .wednesday, .thursday, .friday],
-                    enabled: true,
-                    skipDates: [],
-                    times: [
-                        AlarmTime(id: UUID(), time: LocalTime(hour: 8, minute: 0))
-                    ]
-                )
-                groups = [g]
-                AlarmStore.shared.save(groups)
+                Button("테스트 그룹 생성") {
+                    let g = AlarmGroup(
+                        id: UUID(),
+                        name: "평일 8시",
+                        repeatDays: [.monday, .tuesday, .wednesday, .thursday, .friday],
+                        enabled: true,
+                        skipDates: [],
+                        times: [
+                            AlarmTime(id: UUID(), time: LocalTime(hour: 8, minute: 0))
+                        ]
+                    )
+                    groups = [g]
+                    AlarmStore.shared.save(groups)
+                }
+            }
+            Button("다음 알람 계산") {
+                if let next = groups.first?.nextTriggerDate(from: Date()) {
+                    print("Next:", next)
+                } else {
+                    print("No upcoming alarms.")
+                }
             }
         }
         .padding()
-        .onAppear{
+        .onAppear {
             groups = AlarmStore.shared.load()
         }
     }
 }
+

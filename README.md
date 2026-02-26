@@ -62,6 +62,11 @@
 - 컬렉션에 특정 값이 포함되어 있는지 확인하는 메서드
 - return == bool
 
+**싱글톤 패턴**
+- 클래스의 객체를 한 개만 생성해서 그 객체만을 사용하는 패턴이다.
+
+**Comparable(type)** : 서로 크기 비교가 가능하다는 것을 나타내는 프로토콜
+
 ---
 **제작에 도움이 된 페이지**  
 - [40시간만에 Swift로 IOS 앱 만들기](https://devxoul.gitbooks.io/ios-with-swift-in-40-hours/content/)
