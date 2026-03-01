@@ -67,6 +67,8 @@
 
 **Comparable(type)** : 서로 크기 비교가 가능하다는 것을 나타내는 프로토콜
 
+**Calendar.current** : 현재 사용자의 기기 설정을 따르는 달력 객체
+
 ---
 **제작에 도움이 된 페이지**  
 - [40시간만에 Swift로 IOS 앱 만들기](https://devxoul.gitbooks.io/ios-with-swift-in-40-hours/content/)

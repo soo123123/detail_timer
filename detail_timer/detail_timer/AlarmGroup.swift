@@ -17,13 +17,14 @@ struct AlarmGroup: Identifiable, Codable {
     var skipDates: Set<Date>/*Date == 절대 시간, 같은 날이여도 시간이 다르면 다른 값.*/ // 특정 날짜에는 알람을 울리지 않도록 예외 처리
     var times: [AlarmTime] // 그 그룹에 포합된 여러 알람 시각.
     
-    
+    // 지금 시각 기준으로, 앞으로 울릴 가장 가까운 알람 시각을 계산해서 반환하는 함수
     func nextTriggerDate(from now: Date) -> Date? {
         guard enabled else { return nil }
         
         let calendar = Calendar.current
         let todayKey = calendar.startOfDay(for: now)
         
+        // 오늘 포함 7일간 반복
         for dayOffset in 0..<7 {
             guard let candidateDay = calendar.date(byAdding: .day, value:dayOffset, to: todayKey) else {
                 continue
