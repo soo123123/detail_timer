@@ -54,9 +54,10 @@ struct ContentView: View {
                 }
             }
         }
+        //Vstack을 만들고 padding으로 감싸라
         .padding()
         .onAppear {
-            groups = AlarmStore.shared.load()
+            //groups = AlarmStore.shared.load()
         }
     }
 }

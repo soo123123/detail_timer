@@ -19,6 +19,7 @@ struct AlarmGroup: Identifiable, Codable {
     
     // 지금 시각 기준으로, 앞으로 울릴 가장 가까운 알람 시각을 계산해서 반환하는 함수
     func nextTriggerDate(from now: Date) -> Date? {
+        // 조건1: enabled == false -> else
         guard enabled else { return nil }
         
         let calendar = Calendar.current
@@ -26,31 +27,42 @@ struct AlarmGroup: Identifiable, Codable {
         
         // 오늘 포함 7일간 반복
         for dayOffset in 0..<7 {
+            // dayOffset만큼 day를 더한 날짜 만들기
+            // candiateDay가 nil이 아니면 계속 실행
             guard let candidateDay = calendar.date(byAdding: .day, value:dayOffset, to: todayKey) else {
                 continue
             }
             
+            // candidateDay에서 week만 뽑아서 저장
             let weekdayValue = calendar.component(.weekday, from: candidateDay)
-            guard let weekday = Weekday(/*this*/rawValue: weekdayValue), repeatDays.contains(weekday) else {
+            
+            // 숫자를 enum 타입으로 변환
+            // 변환된 weekday가 반복요일 집합에 있는지 확인
+            guard let weekday = Weekday(rawValue: weekdayValue), repeatDays.contains(weekday) else {
                 continue
             }
             
+            // 조건2: 스킵하기로 했다면 제외
             if skipDates.contains(candidateDay) {
                 continue
             }
             
+            // 그룹에 있는 시간을 기준으로 오름차순 정렬
             let sortedTimes = times.sorted()
             
+            // 정렬값 변수에 저장
             for alarmTime in sortedTimes {
                 var comps = calendar.dateComponents([.year, .month, .day], from: candidateDay)
                 comps.hour = alarmTime.time.hour
                 comps.minute = alarmTime.time.minute
                 comps.second = 0
                 
+                // comps값이 nil이 아니면 값 저장
                 guard let triggerDate = calendar.date(from: comps) else {
                     continue
                 }
                 
+                // 첫 for문에서 오늘 중 다음 알람이 있는지 확인
                 if dayOffset == 0 {
                     if triggerDate > now {
                         return triggerDate

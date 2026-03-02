@@ -69,6 +69,24 @@
 
 **Calendar.current** : 현재 사용자의 기기 설정을 따르는 달력 객체
 
+**component** : Date에서 특정 달력 구성요소 꺼내기
+
+**rawValue** : enum이 내부적으로 가지고 있는 기본 값
+
+**let, var** : 상수, 변수
+
+₩₩₩
+    // Date? == return으로 반환할 수도 nil일 수도 있다.
+    func nextTriggerDate(from now: Date) -> Date? {
+        guard enabled else { return nil }
+₩₩₩
+
+**onAppear** : View가 화면에 나타날 대 실행되는 초기화/로드용 코드 블록
+
+**padding** : View의 바깥 여백을 추가하는 modifier
+
+**modifier** : 기존 View를 변형해서 새로운 View를 만드는 함수
+
 ---
 **제작에 도움이 된 페이지**  
 - [40시간만에 Swift로 IOS 앱 만들기](https://devxoul.gitbooks.io/ios-with-swift-in-40-hours/content/)
