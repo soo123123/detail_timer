@@ -19,9 +19,54 @@ struct ContentView: View {
                 Text(group.name)
                 Text(group.isSkipped(on: Date()) ? "오늘: 스킵됨" : "오늘: 정상")
                 
+                Button("2분 뒤 테스트 알람 생성(안정)") {
+                    let calendar = Calendar.current
+                    let now = Date()
+
+                    // 1) 다음 분의 00초로 올림
+                    let nextMinute = calendar.nextDate(
+                        after: now,
+                        matching: DateComponents(second: 0),
+                        matchingPolicy: .nextTime
+                    )!
+
+                    // 2) 거기서 +2분 (경계 안전)
+                    let target = calendar.date(byAdding: .minute, value: 2, to: nextMinute)!
+
+                    let hour = calendar.component(.hour, from: target)
+                    let minute = calendar.component(.minute, from: target)
+
+                    let weekdayValue = calendar.component(.weekday, from: target)
+                    guard let todayWeekday = Weekday(rawValue: weekdayValue) else { return }
+
+                    let testGroup = AlarmGroup(
+                        id: UUID(),
+                        name: "2분 테스트",
+                        repeatDays: [todayWeekday],
+                        enabled: true,
+                        skipDates: [],
+                        times: [
+                            AlarmTime(id: UUID(), time: LocalTime(hour: hour, minute: minute))
+                        ]
+                    )
+
+                    groups = [testGroup]
+                    AlarmStore.shared.save(groups)
+
+                    Task {
+                        await AlarmNotificationScheduler.shared.rescheduleAll(groups: groups)
+                        // 예약이 실제로 들어갔는지 확인하고 싶으면(디버그 함수 있을 때)
+                        // await AlarmNotificationScheduler.shared.debugPrintPendingAll()
+                    }
+                }
+                
                 Button("오늘만 끄기") {
                     groups[0].skipToday()
                     AlarmStore.shared.save(groups)
+
+                    Task {
+                        await AlarmNotificationScheduler.shared.rescheduleAll(groups: groups)
+                    }
                 }
                 
                 Button("오늘 스킵 해제") {
@@ -32,7 +77,7 @@ struct ContentView: View {
             }
             else {
                 Button("테스트 그룹 생성") {
-                    let g = AlarmGroup(
+                    /*let g = AlarmGroup(
                         id: UUID(),
                         name: "평일 8시",
                         repeatDays: [.monday, .tuesday, .wednesday, .thursday, .friday],
@@ -43,7 +88,7 @@ struct ContentView: View {
                         ]
                     )
                     groups = [g]
-                    AlarmStore.shared.save(groups)
+                    AlarmStore.shared.save(groups)*/
                 }
             }
             Button("다음 알람 계산") {
@@ -57,7 +102,14 @@ struct ContentView: View {
         //Vstack을 만들고 padding으로 감싸라
         .padding()
         .onAppear {
-            //groups = AlarmStore.shared.load()
+            groups = AlarmStore.shared.load()
+            
+            Task {
+                let ok = await AlarmNotificationScheduler.shared.requestAuthorization()
+                if ok {
+                    await AlarmNotificationScheduler.shared.rescheduleAll(groups: groups)
+                }
+            }
         }
     }
 }
