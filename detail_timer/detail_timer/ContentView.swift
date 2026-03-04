@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import UserNotifications
+
 struct ContentView: View {
     @State private var groups: [AlarmGroup] = []
     // ui에서 화면에 그려질 내용을 정의하는 프로퍼티
@@ -19,44 +21,38 @@ struct ContentView: View {
                 Text(group.name)
                 Text(group.isSkipped(on: Date()) ? "오늘: 스킵됨" : "오늘: 정상")
                 
-                Button("2분 뒤 테스트 알람 생성(안정)") {
-                    let calendar = Calendar.current
-                    let now = Date()
+                
 
-                    // 1) 다음 분의 00초로 올림
-                    let nextMinute = calendar.nextDate(
-                        after: now,
-                        matching: DateComponents(second: 0),
-                        matchingPolicy: .nextTime
-                    )!
-
-                    // 2) 거기서 +2분 (경계 안전)
-                    let target = calendar.date(byAdding: .minute, value: 2, to: nextMinute)!
-
-                    let hour = calendar.component(.hour, from: target)
-                    let minute = calendar.component(.minute, from: target)
-
-                    let weekdayValue = calendar.component(.weekday, from: target)
-                    guard let todayWeekday = Weekday(rawValue: weekdayValue) else { return }
-
-                    let testGroup = AlarmGroup(
-                        id: UUID(),
-                        name: "2분 테스트",
-                        repeatDays: [todayWeekday],
-                        enabled: true,
-                        skipDates: [],
-                        times: [
-                            AlarmTime(id: UUID(), time: LocalTime(hour: hour, minute: minute))
-                        ]
-                    )
-
-                    groups = [testGroup]
-                    AlarmStore.shared.save(groups)
-
+                Button("10초 테스트 알림") {
                     Task {
-                        await AlarmNotificationScheduler.shared.rescheduleAll(groups: groups)
-                        // 예약이 실제로 들어갔는지 확인하고 싶으면(디버그 함수 있을 때)
-                        // await AlarmNotificationScheduler.shared.debugPrintPendingAll()
+                        let center = UNUserNotificationCenter.current()
+
+                        do {
+                            let granted = try await center.requestAuthorization(options: [.alert, .sound])
+                            print("권한:", granted)
+
+                            let content = UNMutableNotificationContent()
+                            content.title = "테스트 알림"
+                            content.body = "10초 후 울림"
+                            content.sound = .default
+
+                            let trigger = UNTimeIntervalNotificationTrigger(
+                                timeInterval: 10,
+                                repeats: false
+                            )
+
+                            let request = UNNotificationRequest(
+                                identifier: "test.alarm",
+                                content: content,
+                                trigger: trigger
+                            )
+
+                            try await center.add(request)
+                            print("알림 예약 성공")
+
+                        } catch {
+                            print("알림 에러:", error)
+                        }
                     }
                 }
                 
